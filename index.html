@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Flora AI</title>
+<link rel="icon" type="image/png" href="icon.png"/>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,600;1,300&family=Yeseva+One&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+ 
+<body>
+ 
+<!-- ══ SPLASH ══ -->
+<div id="splash">
+  <div class="splash-seedling">🌱</div>
+  <div class="splash-logo">Flora</div>
+  <div class="splash-sub">Real-time plant diagnosis powered by AI</div>
+  <div class="splash-bar-wrap"><div class="splash-bar"></div></div>
+</div>
+ 
+<div class="navbar">
+  <div class="logo">Flora AI</div>
+  <div class="nav-links">
+    <a data-page="home" class="active-nav" onclick="showPage('home')">Home</a>
+    <a data-page="scan" onclick="showPage('scan')">Scan</a>
+    <a data-page="result" onclick="showPage('result')">Result</a>
+    <a data-page="plants" onclick="showPage('plants')">My Plants</a>
+    <a data-page="tracker" onclick="showPage('tracker')">Tracker</a>
+    <a data-page="tips" onclick="showPage('tips')">Tips</a>
+   
+   
+  </div>
+  <label class="toggle-switch">
+    <input type="checkbox" id="themeToggle" onchange="toggleMode()">
+    <span class="toggle-track">
+      <span class="toggle-thumb"></span>
+    </span>
+  </label>
+</div>
+ 
+<!-- ══ HOME ══ -->
+<div id="home" class="page active">
+  <div class="hero">
+    <div class="hero-glow"></div>
+    <h1>Flora</h1>
+    <p>Real-time plant diagnosis powered by AI vision</p>
+    <button class="btn" onclick="showPage('scan')">Start Scanning</button>
+    <div class="features">
+      <div class="feature">📸 Live Camera</div>
+      <div class="feature">🧠 AI Detection</div>
+      <div class="feature">⚡ Instant Results</div>
+    </div>
+  </div>
+</div>
+ 
+<!-- ══ SCAN ══ -->
+<div id="scan" class="page">
+  <div class="hero">
+    <h1>Scan Plant</h1>
+    <p>Use your camera or upload a photo</p>
+    <div class="mode-tabs">
+      <button class="tab active-tab" id="tabCamera" onclick="switchMode('camera')">📸 Camera</button>
+      <button class="tab" id="tabUpload" onclick="switchMode('upload')">📂 Upload Photo</button>
+    </div>
+    <div id="cameraMode">
+      <p class="scan-tip"><span class="scan-tip-dot"></span>Hold 6–12 inches from the leaf for best results</p>
+      <div class="camera-box">
+        <video id="video" autoplay playsinline></video>
+        <img id="snapshot" />
+        <div class="reticle-corner tl"></div>
+        <div class="reticle-corner tr"></div>
+        <div class="reticle-corner bl"></div>
+        <div class="reticle-corner br"></div>
+        <div class="reticle-center"></div>
+      </div>
+      <div class="scan-btn-row">
+        <button class="btn-primary-filled" id="cameraActionBtn" onclick="handleCameraAction()">Start Camera</button>
+      </div>
+    </div>
+    <div id="uploadMode" style="display:none;">
+      <p class="scan-tip"><span class="scan-tip-dot"></span>Clear, well-lit photos give the best diagnosis</p>
+      <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+        <div class="upload-icon" id="uploadIcon">🌱</div>
+        <p id="uploadText">Tap to choose a photo</p>
+        <img class="preview" id="uploadPreview" style="display:none;" />
+      </div>
+      <input type="file" id="fileInput" accept="image/*" onchange="handleUpload(event)" />
+      <div class="scan-btn-row">
+        <button class="btn-primary-filled" onclick="captureUpload()">Analyze Plant</button>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+<!-- ══ RESULT ══ -->
+<div id="result" class="page">
+  <div class="hero">
+    <h1>AI Diagnosis</h1>
+    <p>Here's what we found</p>
+
+    <div class="result-card">
+      <div class="result-section">
+        <span class="result-label">Diagnosis</span>
+        <h3 id="issue">Waiting for scan...</h3>
+      </div>
+      <div class="result-section">
+        <span class="result-label">What we see</span>
+        <p id="desc" class="result-body">No plant analyzed yet. Go to the Scan page to begin.</p>
+      </div>
+      <div class="result-section result-solution-box" id="solutionSection" style="display:none;">
+        <span class="result-label">✅ What to do</span>
+        <div id="solutionSteps" class="solution-steps"></div>
+      </div>
+    </div>
+
+    <button class="btn" id="saveBtn" onclick="savePlant()" style="display:none;">Save to My Plants</button>
+    <button class="btn" onclick="showPage('scan')" style="margin-left:10px;">Scan Plant</button>
+  </div>
+</div>
+
+<!-- ══ TIPS ══ -->
+<div id="tips" class="page">
+  <div class="hero">
+    <h1>Plant Tips</h1>
+    <p>Simple care advice for every plant owner</p>
+    <div class="tips-filter">
+      <button class="tip-filter-btn active-filter" onclick="filterTips('all', this)">🌱 All</button>
+      <button class="tip-filter-btn" onclick="filterTips('watering', this)">💧 Watering</button>
+      <button class="tip-filter-btn" onclick="filterTips('light', this)">☀️ Light</button>
+      <button class="tip-filter-btn" onclick="filterTips('soil', this)">🪴 Soil</button>
+      <button class="tip-filter-btn" onclick="filterTips('pests', this)">🐛 Pests</button>
+    </div>
+    <div class="tips-grid" id="tipsGrid"></div>
+  </div>
+</div>
+
+<!-- ══ TRACKER ══ -->
+<div id="tracker" class="page">
+  <div class="hero">
+    <h1>Plant Tracker</h1>
+    <p>Keep an eye on your saved plants</p>
+    <div id="trackerEmpty" class="empty-state" style="display:none;">
+      <div>🌱</div>
+      <p>No plants saved yet.<br>Scan a plant and save it first!</p>
+      <button class="btn" onclick="showPage('scan')" style="margin-top:10px;">Scan a Plant</button>
+    </div>
+    <div class="tracker-grid" id="trackerGrid"></div>
+  </div>
+</div>
+
+<!-- Check-in Modal -->
+<div id="checkinModal" class="modal-overlay" style="display:none;" onclick="closeCheckinOutside(event)">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeCheckin()">✕</button>
+    <h2 class="modal-title" id="checkinTitle">How's your plant?</h2>
+    <div class="modal-field">
+      <label>How does it look?</label>
+      <div class="health-options" id="checkinHealthOptions">
+        <button class="health-btn selected" data-health="thriving" onclick="selectCheckinHealth(this)">🌱 Thriving</button>
+        <button class="health-btn" data-health="okay" onclick="selectCheckinHealth(this)">🙂 Okay</button>
+        <button class="health-btn" data-health="struggling" onclick="selectCheckinHealth(this)">😟 Struggling</button>
+        <button class="health-btn" data-health="sick" onclick="selectCheckinHealth(this)">🤒 Sick</button>
+      </div>
+    </div>
+    <div class="modal-field">
+      <label>Did you water it today?</label>
+      <div class="health-options">
+        <button class="health-btn" id="wateredYes" onclick="selectWatered(true)">💧 Yes</button>
+        <button class="health-btn" id="wateredNo" onclick="selectWatered(false)">❌ No</button>
+      </div>
+    </div>
+    <div class="modal-field">
+      <label>Any notes? <span style="opacity:0.5;font-weight:400;">(optional)</span></label>
+      <textarea id="checkinNotes" placeholder="e.g. leaves look droopy, added new soil..."></textarea>
+    </div>
+    <button class="btn-primary-filled" style="width:100%;margin-top:8px;" onclick="saveCheckin()">Save Check-in</button>
+  </div>
+</div>
+
+<!-- ══ MY PLANTS ══ -->
+<div id="plants" class="page">
+  <div class="hero">
+    <h1>My Plants</h1>
+    <p>Your saved diagnoses</p>
+    <div id="plantList" class="plant-grid"></div>
+    <div id="emptyState" class="empty-state">
+      <div>🌱</div>
+      <p>No plants saved yet.<br>Scan one to get started!</p>
+    </div>
+    <button class="btn" onclick="showPage('home')" style="margin-top:30px;">← Back to Home</button>
+  </div>
+</div>
+ 
+<canvas id="canvas" style="display:none;"></canvas>
+<footer class="footer">© 2026 Flora AI — All rights reserved</footer>
+ 
+<script>
+let stream = null;
+let cameraPermissionGranted = false;
+let uploadedImage = null;
+let lastDiagnosis = null;
+let currentCheckinId = null;
+let checkinWatered = false;
+let checkinHealth = 'thriving';
+
+/* ── SPLASH ── */
+(function(){
+  const splash = document.getElementById('splash');
+  const shown = sessionStorage.getItem('flora_splash');
+  if(shown){ splash.style.display = 'none'; return; }
+  sessionStorage.setItem('flora_splash', '1');
+  setTimeout(() => {
+    splash.classList.add('hide');
+    setTimeout(() => { splash.style.display = 'none'; }, 650);
+  }, 4500);
+})();
+
+window.onload = () => { loadSavedPlants(); renderTips(); };
+
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-links a').forEach(a => {
+    a.classList.toggle('active-nav', a.dataset.page === id);
+  });
+  if(id === 'plants') updateEmptyState();
+  if(id === 'tracker') renderTrackerGrid();
+  if(id !== 'scan') resetCameraUI();
+}
+
+function toggleMode(){ document.body.classList.toggle('dark'); }
+
+/* ── Camera ── */
+function resetCameraUI(){
+  const video = document.getElementById('video');
+  const snapshot = document.getElementById('snapshot');
+  const btn = document.getElementById('cameraActionBtn');
+  if(stream){
+    video.style.display = 'block';
+    snapshot.style.display = 'none';
+    btn.textContent = 'Take Picture';
+  } else {
+    video.style.display = 'block';
+    snapshot.style.display = 'none';
+    btn.textContent = cameraPermissionGranted ? 'Take Picture' : 'Start Camera';
+  }
+}
+
+function handleCameraAction(){ if(!stream){ startCamera(); } else { captureCamera(); } }
+
+async function startCamera(){
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+    cameraPermissionGranted = true;
+    const video = document.getElementById('video');
+    video.srcObject = stream;
+    video.style.display = 'block';
+    document.getElementById('snapshot').style.display = 'none';
+    document.getElementById('cameraActionBtn').textContent = 'Take Picture';
+  } catch(err){
+    alert("Camera access denied. Browser requires HTTPS for camera access.");
+  }
+}
+
+function captureCamera(){
+  if(!stream){ alert("Please start the camera first."); return; }
+  const video = document.getElementById('video');
+  const canvas = document.getElementById('canvas');
+  const snapshot = document.getElementById('snapshot');
+  canvas.width  = video.videoWidth  || 300;
+  canvas.height = video.videoHeight || 400;
+  canvas.getContext('2d').drawImage(video, 0, 0);
+  const imageBase64 = canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
+  snapshot.src = canvas.toDataURL('image/jpeg', 0.8);
+  snapshot.style.display = 'block';
+  video.style.display = 'none';
+  showPage('result');
+  analyzeWithGemini(imageBase64);
+}
+
+function switchMode(mode){
+  const cameraMode = document.getElementById('cameraMode');
+  const uploadMode = document.getElementById('uploadMode');
+  const tabCamera  = document.getElementById('tabCamera');
+  const tabUpload  = document.getElementById('tabUpload');
+  if(mode === 'camera'){
+    cameraMode.style.display = 'block';
+    uploadMode.style.display = 'none';
+    tabCamera.classList.add('active-tab');
+    tabUpload.classList.remove('active-tab');
+  } else {
+    cameraMode.style.display = 'none';
+    uploadMode.style.display = 'block';
+    tabCamera.classList.remove('active-tab');
+    tabUpload.classList.add('active-tab');
+    if(stream){ stream.getTracks().forEach(t => t.stop()); stream = null; }
+  }
+}
+
+function handleUpload(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const preview = document.getElementById('uploadPreview');
+    preview.src = e.target.result;
+    preview.style.display = 'block';
+    document.getElementById('uploadIcon').style.display = 'none';
+    document.getElementById('uploadText').style.display = 'none';
+    uploadedImage = e.target.result.split(',')[1];
+  };
+  reader.readAsDataURL(file);
+}
+
+function resetUploadUI(){
+  uploadedImage = null;
+  document.getElementById('fileInput').value = "";
+  document.getElementById('uploadPreview').style.display = 'none';
+  document.getElementById('uploadIcon').style.display = 'block';
+  document.getElementById('uploadText').style.display = 'block';
+}
+
+function captureUpload(){
+  if(!uploadedImage){ alert("Please select a photo first."); return; }
+  const currentImage = uploadedImage;
+  resetUploadUI();
+  showPage('result');
+  analyzeWithGemini(currentImage);
+}
+
+/* ── Analyze ── */
+async function analyzeWithGemini(imageBase64){
+  const issueEl      = document.getElementById('issue');
+  const descEl       = document.getElementById('desc');
+  const solutionSec  = document.getElementById('solutionSection');
+  const solutionEl   = document.getElementById('solutionSteps');
+  const saveBtn      = document.getElementById('saveBtn');
+
+  lastDiagnosis = null;
+  issueEl.innerHTML = '<span class="spinner"></span> Analyzing...';
+  descEl.innerText  = 'AI is examining your plant...';
+  solutionSec.style.display = 'none';
+  saveBtn.style.display = 'none';
+
+  try {
+    const response = await fetch('/api/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image: imageBase64 })
+    });
+
+    const text = await response.text();
+
+    let result;
+    try {
+      result = JSON.parse(text);
+    } catch(e) {
+      issueEl.innerText = 'Analysis Failed';
+      descEl.innerText  = 'Server returned an unexpected response.';
+      console.error('Raw response:', text);
+      return;
+    }
+
+    if(!response.ok){
+      issueEl.innerText = 'Analysis Failed';
+      descEl.innerText  = result.error || "Today's AI scans are used up — come back tomorrow!";
+      return;
+    }
+
+    if(!result.issue || !result.description){
+      issueEl.innerText = 'Analysis Failed';
+      descEl.innerText  = 'Unexpected response from server.';
+      console.error('Unexpected result shape:', result);
+      return;
+    }
+
+    lastDiagnosis = result;
+    issueEl.innerText = result.issue;
+    descEl.innerText  = result.description;
+
+    if(result.solution){
+      const steps = result.solution
+        .split(/\n|(?:\d+\.\s)/)
+        .map(s => s.trim()).filter(Boolean);
+      solutionEl.innerHTML = steps.map(s =>
+        `<div class="solution-step"><span class="solution-dot">✓</span><span>${s}</span></div>`
+      ).join('');
+      solutionSec.style.display = 'block';
+    }
+
+    saveBtn.style.display = 'inline-block';
+
+  } catch(err){
+    issueEl.innerText = 'Analysis Failed';
+    descEl.innerText  = err.message;
+    console.error("Fetch error:", err);
+  }
+}
+
+/* ── My Plants ── */
+function getSavedPlants(){ return JSON.parse(localStorage.getItem('flora_plants') || '[]'); }
+function savePlantsToStorage(plants){ localStorage.setItem('flora_plants', JSON.stringify(plants)); }
+
+function savePlant(){
+  if(!lastDiagnosis) return;
+  const saved = getSavedPlants();
+  const plant = {
+    ...lastDiagnosis,
+    id: Date.now(),
+    savedDate: new Date().toLocaleDateString(),
+    logs: [],
+    health: 'okay'
+  };
+  saved.push(plant);
+  savePlantsToStorage(saved);
+  renderPlantCard(plant);
+  updateEmptyState();
+  showPage('plants');
+}
+
+function loadSavedPlants(){
+  getSavedPlants().forEach(plant => renderPlantCard(plant));
+  updateEmptyState();
+}
+
+function renderPlantCard(plantData){
+  const list = document.getElementById('plantList');
+  const card = document.createElement('div');
+  card.className = 'plant-card';
+  card.dataset.id = plantData.id;
+  const shortDesc = (plantData.description || '').length > 120
+    ? plantData.description.substring(0, 120) + '...'
+    : plantData.description;
+  card.innerHTML = `
+    <button class="remove-btn" onclick="removePlant(this)">✕</button>
+    <div style="font-size:28px;margin-bottom:8px;">🌿</div>
+    <strong style="font-size:13px;color:var(--primary);">${plantData.issue}</strong>
+    <p style="font-size:12px;margin-top:6px;opacity:0.75;line-height:1.5;">${shortDesc}</p>
+    <p style="font-size:11px;opacity:0.45;margin-top:6px;">Saved ${plantData.savedDate || ''}</p>
+  `;
+  list.appendChild(card);
+}
+
+function removePlant(btnElement){
+  const card = btnElement.parentElement;
+  const id = Number(card.dataset.id);
+  let saved = getSavedPlants().filter(p => p.id !== id);
+  savePlantsToStorage(saved);
+  card.style.opacity = '0';
+  card.style.transform = 'scale(0.8)';
+  card.style.transition = 'all 0.3s ease';
+  setTimeout(() => { card.remove(); updateEmptyState(); }, 300);
+}
+
+function updateEmptyState(){
+  const list  = document.getElementById('plantList');
+  const empty = document.getElementById('emptyState');
+  empty.style.display = list.children.length === 0 ? 'block' : 'none';
+}
+
+/* ══ TRACKER — linked to saved plants ══ */
+const HEALTH_INFO = {
+  thriving:   { label: 'Thriving',   color:  '#EAECE3' },
+  okay:       { label: 'Okay',        color: '#FEEE8C' },
+  struggling: { label: 'Struggling',  color: '#ED8800' },
+  sick:       { label: 'Sick',        color: '#960119' }
+};
+
+function renderTrackerGrid(){
+  const plants = getSavedPlants();
+  const grid   = document.getElementById('trackerGrid');
+  const empty  = document.getElementById('trackerEmpty');
+
+  if(plants.length === 0){
+    empty.style.display = 'block';
+    grid.innerHTML = '';
+    return;
+  }
+  empty.style.display = 'none';
+
+  grid.innerHTML = plants.map(p => {
+    const h = HEALTH_INFO[p.health || 'okay'];
+    const logs = p.logs || [];
+    const lastLog     = logs.length > 0 ? logs[logs.length - 1] : null;
+    const lastWatered = [...logs].reverse().find(l => l.watered);
+
+    return `
+      <div class="tracker-card">
+        <div class="tracker-card-top">
+          <div class="tracker-plant-icon">🌱</div>
+          <div>
+            <strong class="tracker-name">${p.issue}</strong>
+            <div class="tracker-date">Saved ${p.savedDate || ''}</div>
+          </div>
+        </div>
+        <div class="tracker-badge" style="background:${h.color}22;color:${h.color};border-color:${h.color}44;">
+          ${h.icon} ${h.label}
+        </div>
+        <div class="tracker-meta">
+          ${lastWatered
+            ? `<span>💧 Last watered ${lastWatered.date}</span>`
+            : `<span class="muted">💧 Not watered yet</span>`}
+          ${lastLog
+            ? `<span>📝 Checked in ${lastLog.date}</span>`
+            : `<span class="muted">No check-ins yet</span>`}
+        </div>
+        <button class="btn checkin-btn" onclick="openCheckin(${p.id}, '${p.issue.replace(/'/g,"\\'")}')">
+          + Check In
+        </button>
+      </div>
+    `;
+  }).join('');
+}
+
+/* ── Check-in Modal ── */
+function openCheckin(id, name){
+  currentCheckinId = id;
+  checkinWatered   = false;
+  checkinHealth    = 'thriving';
+  document.getElementById('checkinTitle').innerText = `How's your ${name}?`;
+  document.getElementById('checkinNotes').value = '';
+  document.querySelectorAll('#checkinHealthOptions .health-btn').forEach(b => b.classList.remove('selected'));
+  document.querySelector('#checkinHealthOptions .health-btn[data-health="thriving"]').classList.add('selected');
+  document.getElementById('wateredYes').classList.remove('selected');
+  document.getElementById('wateredNo').classList.remove('selected');
+  document.getElementById('checkinModal').style.display = 'flex';
+}
+
+function closeCheckin(){
+  document.getElementById('checkinModal').style.display = 'none';
+  currentCheckinId = null;
+}
+function closeCheckinOutside(e){
+  if(e.target === document.getElementById('checkinModal')) closeCheckin();
+}
+function selectCheckinHealth(btn){
+  document.querySelectorAll('#checkinHealthOptions .health-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  checkinHealth = btn.dataset.health;
+}
+function selectWatered(val){
+  checkinWatered = val;
+  document.getElementById('wateredYes').classList.toggle('selected', val === true);
+  document.getElementById('wateredNo').classList.toggle('selected', val === false);
+}
+function saveCheckin(){
+  if(!currentCheckinId) return;
+  const plants = getSavedPlants();
+  const plant  = plants.find(p => p.id === currentCheckinId);
+  if(!plant) return;
+  plant.health = checkinHealth;
+  if(!plant.logs) plant.logs = [];
+  plant.logs.push({
+    date:    new Date().toLocaleDateString(),
+    health:  checkinHealth,
+    watered: checkinWatered,
+    notes:   document.getElementById('checkinNotes').value.trim()
+  });
+  savePlantsToStorage(plants);
+  closeCheckin();
+  renderTrackerGrid();
+}
+
+/* ══ TIPS ══ */
+const TIPS_DATA = [
+  { category:'watering', icon:'💧', title:'Check the soil first',
+    body:'Before watering, poke your finger about an inch into the soil. If it feels dry, water it. If it still feels damp, wait a couple of days.' },
+  { category:'watering', icon:'💧', title:'Yellow leaves = too much water',
+    body:'Soft yellow leaves usually mean overwatering. Let the soil dry out fully before watering again and make sure your pot has a drainage hole.' },
+  { category:'watering', icon:'💧', title:'Brown crispy tips = too little water',
+    body:'Dry, brown tips mean your plant is thirsty or the air is too dry. Try watering more often or misting the leaves.' },
+  { category:'watering', icon:'💧', title:'Water less in winter',
+    body:'Plants grow slower in winter and need less water. Cut back by about half — overwatering in cold months is a very common mistake.' },
+  { category:'light', icon:'☀️', title:'Bright but not direct',
+    body:'Most houseplants love bright, indirect light — near a window but not in harsh direct sun, which can burn leaves. If your plant looks pale or stretched, it needs more light.' },
+  { category:'light', icon:'☀️', title:'Turn it weekly',
+    body:'Rotate your plant a little each week so all sides get even light. Otherwise it will lean and grow lopsided toward the window.' },
+  { category:'light', icon:'☀️', title:'Dark room? Try a grow light',
+    body:'If your space doesn\'t get much natural light, a simple LED grow light works well. They\'re affordable and can make a huge difference for plant health.' },
+  { category:'soil', icon:'🪴', title:'Always use pots with holes',
+    body:'Drainage holes at the bottom are essential. Without them, water collects at the bottom and causes roots to rot — which is very hard to fix.' },
+  { category:'soil', icon:'🪴', title:'When to repot',
+    body:'If you see roots poking out the bottom or your plant looks cramped, it\'s time for a bigger pot. Go just one size up — too big can cause overwatering problems.' },
+  { category:'soil', icon:'🪴', title:'Refresh old soil',
+    body:'Old soil loses nutrients over time. Repotting with fresh potting mix every 1–2 years gives your plant a healthy boost without much effort.' },
+  { category:'pests', icon:'🐛', title:'Check under the leaves',
+    body:'Most bugs hide on the underside of leaves. Flip them over occasionally and look for tiny dots, sticky patches, or white fluff — those are early warning signs.' },
+  { category:'pests', icon:'🐛', title:'Isolate a sick plant',
+    body:'If you spot bugs, move the plant away from your others immediately. Pests spread fast — better safe than sorry.' },
+  { category:'pests', icon:'🐛', title:'Easy DIY spray',
+    body:'Mix a few drops of dish soap into a spray bottle of water. Spray all leaf surfaces — top and bottom — once a week for 3–4 weeks. Works on most common pests.' },
+  { category:'pests', icon:'🐛', title:'Tiny flies = fungus gnats',
+    body:'Little flies near your plant live in wet soil. Let the top layer of soil dry out completely between waterings and they\'ll go away on their own.' }
+];
+
+function renderTips(category = 'all'){
+  const grid = document.getElementById('tipsGrid');
+  const filtered = category === 'all' ? TIPS_DATA : TIPS_DATA.filter(t => t.category === category);
+  grid.innerHTML = filtered.map(tip => `
+    <div class="tip-card">
+      <div class="tip-icon">${tip.icon}</div>
+      <div class="tip-content">
+        <strong class="tip-title">${tip.title}</strong>
+        <p class="tip-body">${tip.body}</p>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterTips(category, btn){
+  document.querySelectorAll('.tip-filter-btn').forEach(b => b.classList.remove('active-filter'));
+  btn.classList.add('active-filter');
+  renderTips(category);
+}
+</script>
+</body>
+</html>
