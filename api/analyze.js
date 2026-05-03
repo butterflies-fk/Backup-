@@ -59,6 +59,7 @@ Format:
 {
   "issue": "string",
   "description": "string"
+  "solution": "string with steps separated by newlines"
 }
 `
                                 }
