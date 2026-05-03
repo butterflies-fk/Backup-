@@ -174,7 +174,16 @@
     text-align: center;
     padding: 90px 20px 70px;
     position: relative;
+    background-image: url('assets/bg_light_mode.png');
+    background-size: cover;
+    background-position: center;
+    border-radius: 0 0 24px 24px;
   }
+
+  .dark .hero {
+    background-image: url('assets/bg_dark_mode.png');
+  }
+  
   .hero-glow {
     position: absolute;
     top: 60px; left: 50%;
