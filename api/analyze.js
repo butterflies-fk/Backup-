@@ -59,7 +59,7 @@ Format:
 {
   "issue": "string",
   "description": "string"
-  "solution": "string with steps separated by newlines"
+  "solution": "2-3 short actionable steps separated by newlines"
 }
 `
                                 }
