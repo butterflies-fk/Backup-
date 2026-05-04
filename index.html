@@ -8,9 +8,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,600;1,300&family=Yeseva+One&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 </head>
- 
+
 <body>
- 
+
 <!-- ══ SPLASH ══ -->
 <div id="splash">
   <div class="splash-seedling">🌱</div>
@@ -18,7 +18,7 @@
   <div class="splash-sub">Real-time plant diagnosis powered by AI</div>
   <div class="splash-bar-wrap"><div class="splash-bar"></div></div>
 </div>
- 
+
 <div class="navbar">
   <div class="logo">Flora AI</div>
   <div class="nav-links">
@@ -28,8 +28,7 @@
     <a data-page="plants" onclick="showPage('plants')">My Plants</a>
     <a data-page="tracker" onclick="showPage('tracker')">Tracker</a>
     <a data-page="tips" onclick="showPage('tips')">Tips</a>
-   
-   
+    <a data-page="about" onclick="showPage('about')">About</a>
   </div>
   <label class="toggle-switch">
     <input type="checkbox" id="themeToggle" onchange="toggleMode()">
@@ -38,11 +37,12 @@
     </span>
   </label>
 </div>
- 
+
 <!-- ══ HOME ══ -->
 <div id="home" class="page active">
   <div class="hero">
     <div class="hero-glow"></div>
+
     <h1>Flora</h1>
     <p>Real-time plant diagnosis powered by AI vision</p>
     <button class="btn" onclick="showPage('scan')">Start Scanning</button>
@@ -51,9 +51,19 @@
       <div class="feature">🧠 AI Detection</div>
       <div class="feature">⚡ Instant Results</div>
     </div>
+
+    <!-- Seasonal Reminder — below features -->
+    <div class="seasonal-card" id="seasonalCard"></div>
+
+    <!-- Plant of the Day -->
+    <div class="potd-card">
+      <span class="potd-label">🌱 Plant of the Day</span>
+      <h3 class="potd-name" id="potdName"></h3>
+      <p class="potd-fact" id="potdFact"></p>
+    </div>
   </div>
 </div>
- 
+
 <!-- ══ SCAN ══ -->
 <div id="scan" class="page">
   <div class="hero">
@@ -92,13 +102,12 @@
     </div>
   </div>
 </div>
- 
+
 <!-- ══ RESULT ══ -->
 <div id="result" class="page">
   <div class="hero">
     <h1>AI Diagnosis</h1>
     <p>Here's what we found</p>
-
     <div class="result-card">
       <div class="result-section">
         <span class="result-label">Diagnosis</span>
@@ -113,7 +122,6 @@
         <div id="solutionSteps" class="solution-steps"></div>
       </div>
     </div>
-
     <button class="btn" id="saveBtn" onclick="savePlant()" style="display:none;">Save to My Plants</button>
     <button class="btn" onclick="showPage('scan')" style="margin-left:10px;">Scan Plant</button>
   </div>
@@ -139,11 +147,30 @@
 <div id="tracker" class="page">
   <div class="hero">
     <h1>Plant Tracker</h1>
-    <p>Keep an eye on your saved plants</p>
+
+    <!-- Streak Banner -->
+    <div class="streak-banner" id="streakBanner" style="display:none;"></div>
+
+    <!-- Watering Reminder Setup -->
+    <div class="watering-reminder-box" id="wateringReminderBox">
+      <span class="potd-label">💧 Watering Reminder</span>
+      <p class="watering-reminder-desc">Get a browser notification to water your plants.</p>
+      <div class="watering-reminder-row">
+        <select id="reminderFreq" class="reminder-select">
+          <option value="1">Every day</option>
+          <option value="2">Every 2 days</option>
+          <option value="3" selected>Every 3 days</option>
+          <option value="7">Every week</option>
+        </select>
+        <button class="btn-primary-filled" style="margin-top:0;padding:10px 20px;font-size:13px;" onclick="setupWateringReminder()">Set Reminder</button>
+      </div>
+      <p class="reminder-status" id="reminderStatus"></p>
+    </div>
+
     <div id="trackerEmpty" class="empty-state" style="display:none;">
       <div>🌱</div>
       <p>No plants saved yet.<br>Scan a plant and save it first!</p>
-      <button class="btn" onclick="showPage('scan')" style="margin-top:10px;">Scan a Plant</button>
+      <button class="btn" onclick="showPage('scan')" style="margin-top:30px;">Scan a Plant</button>
     </div>
     <div class="tracker-grid" id="trackerGrid"></div>
   </div>
@@ -191,10 +218,51 @@
     <button class="btn" onclick="showPage('home')" style="margin-top:30px;">← Back to Home</button>
   </div>
 </div>
- 
+
+<!-- ══ ABOUT ══ -->
+<div id="about" class="page">
+  <div class="hero">
+    <h1>About Flora</h1>
+    <p>Built for plant lovers, powered by AI</p>
+
+    <div class="about-wrapper">
+      <div class="about-grid">
+        <div class="about-card-item">
+          <div class="about-card-icon">🌱</div>
+          <h3 class="about-card-heading">What is Flora AI?</h3>
+          <p class="about-card-body">Flora AI is a real-time plant diagnosis app that uses Google's Gemini AI to identify plant issues from photos. Simply scan a leaf or upload a photo and get an instant diagnosis with actionable solutions.</p>
+        </div>
+        <div class="about-card-item">
+          <div class="about-card-icon">🧠</div>
+          <h3 class="about-card-heading">How it works</h3>
+          <p class="about-card-body">Take or upload a photo of your plant. Our AI analyzes the image, identifies any diseases, pests, or deficiencies, and gives you a clear diagnosis along with simple steps to fix the issue.</p>
+        </div>
+        <div class="about-card-item">
+          <div class="about-card-icon">📊</div>
+          <h3 class="about-card-heading">Track & Monitor</h3>
+          <p class="about-card-body">Save your diagnoses, track plant health over time, log watering, and set reminders — all in one place. Flora helps you stay on top of your plant care routine.</p>
+        </div>
+        <div class="about-card-item">
+          <div class="about-card-icon">🔒</div>
+          <h3 class="about-card-heading">Your data</h3>
+          <p class="about-card-body">All your plant data is stored locally on your device. We don't collect or store any personal information. Your photos are only used temporarily to generate a diagnosis and are never saved.</p>
+        </div>
+      </div>
+
+      <div class="about-cta-strip">
+        <div class="about-cta-text">
+          <span class="about-cta-label">Ready to diagnose your plants?</span>
+          <p class="about-cta-sub">It only takes a second — just point and scan.</p>
+        </div>
+        <button class="btn" onclick="showPage('scan')" style="margin-top:0; white-space:nowrap;">Start Scanning →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <canvas id="canvas" style="display:none;"></canvas>
 <footer class="footer">© 2026 Flora AI — All rights reserved</footer>
- 
+
 <script>
 let stream = null;
 let cameraPermissionGranted = false;
@@ -216,7 +284,13 @@ let checkinHealth = 'thriving';
   }, 4500);
 })();
 
-window.onload = () => { loadSavedPlants(); renderTips(); };
+window.onload = () => {
+  loadSavedPlants();
+  renderTips();
+  renderPlantOfDay();
+  renderSeasonalReminder();
+  loadReminderStatus();
+};
 
 function showPage(id){
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -225,7 +299,7 @@ function showPage(id){
     a.classList.toggle('active-nav', a.dataset.page === id);
   });
   if(id === 'plants') updateEmptyState();
-  if(id === 'tracker') renderTrackerGrid();
+  if(id === 'tracker'){ renderTrackerGrid(); renderStreakBanner(); }
   if(id !== 'scan') resetCameraUI();
 }
 
@@ -331,11 +405,11 @@ function captureUpload(){
 
 /* ── Analyze ── */
 async function analyzeWithGemini(imageBase64){
-  const issueEl      = document.getElementById('issue');
-  const descEl       = document.getElementById('desc');
-  const solutionSec  = document.getElementById('solutionSection');
-  const solutionEl   = document.getElementById('solutionSteps');
-  const saveBtn      = document.getElementById('saveBtn');
+  const issueEl     = document.getElementById('issue');
+  const descEl      = document.getElementById('desc');
+  const solutionSec = document.getElementById('solutionSection');
+  const solutionEl  = document.getElementById('solutionSteps');
+  const saveBtn     = document.getElementById('saveBtn');
 
   lastDiagnosis = null;
   issueEl.innerHTML = '<span class="spinner"></span> Analyzing...';
@@ -351,7 +425,6 @@ async function analyzeWithGemini(imageBase64){
     });
 
     const text = await response.text();
-
     let result;
     try {
       result = JSON.parse(text);
@@ -434,7 +507,7 @@ function renderPlantCard(plantData){
     : plantData.description;
   card.innerHTML = `
     <button class="remove-btn" onclick="removePlant(this)">✕</button>
-    <div style="font-size:28px;margin-bottom:8px;">🌿</div>
+    <div style="font-size:28px;margin-bottom:8px;">🌱</div>
     <strong style="font-size:13px;color:var(--primary);">${plantData.issue}</strong>
     <p style="font-size:12px;margin-top:6px;opacity:0.75;line-height:1.5;">${shortDesc}</p>
     <p style="font-size:11px;opacity:0.45;margin-top:6px;">Saved ${plantData.savedDate || ''}</p>
@@ -459,12 +532,138 @@ function updateEmptyState(){
   empty.style.display = list.children.length === 0 ? 'block' : 'none';
 }
 
-/* ══ TRACKER — linked to saved plants ══ */
+/* ══ PLANT OF THE DAY ══ */
+const PLANTS_OF_DAY = [
+  { name: 'Monstera', fact: 'The holes in Monstera leaves help them survive strong winds and capture more sunlight in the rainforest.' },
+  { name: 'Aloe Vera', fact: 'Aloe Vera is 99% water and has been used medicinally for over 6,000 years.' },
+  { name: 'Peace Lily', fact: 'Peace Lilies can thrive in low light and actually help purify indoor air.' },
+  { name: 'Pothos', fact: 'Pothos is nearly indestructible — it can grow in water, low light, and even without soil.' },
+  { name: 'Snake Plant', fact: 'Snake Plants release oxygen at night, making them one of the best bedroom plants.' },
+  { name: 'Fiddle Leaf Fig', fact: 'Fiddle Leaf Figs are named after their leaves which are shaped like a fiddle or violin.' },
+  { name: 'Spider Plant', fact: 'Spider Plants were one of the plants taken to space by NASA to test air purification.' },
+  { name: 'Lavender', fact: 'Lavender has been used for over 2,500 years for its calming scent and medicinal properties.' },
+  { name: 'Basil', fact: 'Basil is sacred in Hindu culture and is believed to ward off evil spirits.' },
+  { name: 'Cactus', fact: 'Some cacti can live for over 200 years and store enough water to survive years of drought.' },
+  { name: 'Orchid', fact: 'Orchids are one of the oldest plant families on Earth, with fossils dating back 100 million years.' },
+  { name: 'Bamboo', fact: 'Bamboo is the fastest growing plant on Earth — some species grow up to 91cm in a single day.' }
+];
+
+function renderPlantOfDay(){
+  const today = new Date().getDate();
+  const plant = PLANTS_OF_DAY[today % PLANTS_OF_DAY.length];
+  document.getElementById('potdName').innerText = plant.name;
+  document.getElementById('potdFact').innerText = plant.fact;
+}
+
+/* ══ SEASONAL REMINDER ══ */
+function renderSeasonalReminder(){
+  const month = new Date().getMonth();
+  let icon, title, tip;
+
+  if(month >= 2 && month <= 4){
+    icon = '🌸'; title = "It's Spring!";
+    tip = "Perfect time to repot root-bound plants, start fertilizing again, and move plants to brighter spots.";
+  } else if(month >= 5 && month <= 7){
+    icon = '☀️'; title = "It's Summer!";
+    tip = "Water more frequently as heat increases evaporation. Watch for pests and move sensitive plants out of direct sun.";
+  } else if(month >= 8 && month <= 10){
+    icon = '🍂'; title = "It's Autumn!";
+    tip = "Start reducing watering and stop fertilizing. Bring outdoor plants inside before the first frost.";
+  } else {
+    icon = '❄️'; title = "It's Winter!";
+    tip = "Water sparingly — most plants are dormant. Keep them away from cold drafts and dry heating vents.";
+  }
+
+  document.getElementById('seasonalCard').innerHTML = `
+    <p style="font-size:13px;opacity:0.7;margin:0;font-style:italic;font-weight:300;">${icon} <strong style="font-weight:600;font-style:normal;">${title}</strong> — ${tip}</p>
+  `;
+}
+
+/* ══ WATERING REMINDER ══ */
+function loadReminderStatus(){
+  const saved = localStorage.getItem('flora_reminder_days');
+  if(saved){
+    document.getElementById('reminderFreq').value = saved;
+    document.getElementById('reminderStatus').innerText = ` Reminder set!`;
+  }
+}
+
+async function setupWateringReminder(){
+  const days = parseInt(document.getElementById('reminderFreq').value);
+  const statusEl = document.getElementById('reminderStatus');
+
+  if(!('Notification' in window)){
+    statusEl.innerText = '❌ Your browser does not support notifications.';
+    return;
+  }
+
+  const permission = await Notification.requestPermission();
+  if(permission !== 'granted'){
+    statusEl.innerText = '❌ Notification permission denied. Please enable it in your browser settings.';
+    return;
+  }
+
+  localStorage.setItem('flora_reminder_days', days);
+  localStorage.setItem('flora_reminder_set', Date.now());
+  statusEl.innerText = `Reminder set!`;
+
+  new Notification('Flora AI 🌱', {
+    body: `Watering reminder set!`,
+  });
+
+  scheduleNextWateringNotification(days);
+}
+
+function scheduleNextWateringNotification(days){
+  const ms = days * 24 * 60 * 60 * 1000;
+  setTimeout(() => {
+    if(Notification.permission === 'granted'){
+      new Notification('Flora AI 💧 Time to Water!', {
+        body: "Your plants are thirsty! Check in on them and give them some water.",
+        icon: 'icon.png'
+      });
+      scheduleNextWateringNotification(days);
+    }
+  }, ms);
+}
+
+/* ══ STREAK COUNTER ══ */
+function getCheckinStreak(){
+  const plants = getSavedPlants();
+  const allDates = new Set();
+  plants.forEach(p => { (p.logs || []).forEach(l => allDates.add(l.date)); });
+  const sorted = [...allDates].sort((a, b) => new Date(b) - new Date(a));
+  if(sorted.length === 0) return 0;
+  let streak = 0;
+  let current = new Date();
+  current.setHours(0,0,0,0);
+  for(let i = 0; i < sorted.length; i++){
+    const d = new Date(sorted[i]);
+    d.setHours(0,0,0,0);
+    const diff = Math.round((current - d) / (1000*60*60*24));
+    if(diff === i) { streak++; } else { break; }
+  }
+  return streak;
+}
+
+function renderStreakBanner(){
+  const streak = getCheckinStreak();
+  const banner = document.getElementById('streakBanner');
+  if(streak >= 2){
+    banner.style.display = 'block';
+    const emoji = streak >= 7 ? '🔥🔥🔥' : streak >= 5 ? '🔥🔥' : '🔥';
+    banner.innerHTML = `${emoji} You've checked in <strong>${streak} days in a row!</strong> Keep it up!`;
+  } else {
+    banner.style.display = 'none';
+  }
+}
+
+/* ══ TRACKER ══ */
 const HEALTH_INFO = {
-  thriving:   { label: 'Thriving',   color:  '#EAECE3' },
-  okay:       { label: 'Okay',        color: '#FEEE8C' },
-  struggling: { label: 'Struggling',  color: '#ED8800' },
-  sick:       { label: 'Sick',        color: '#960119' }
+  thriving:   { icon: '🌱', label: 'Thriving',   color: '#6F8F6B' },
+  okay:       { icon: '🙂', label: 'Okay',       color: '#C8A94A' },
+  struggling: { icon: '😧', label: 'Struggling', color: '#ED8800' },
+  sick:       { icon: '🤒', label: 'Sick',       color: '#960119' }
 };
 
 function renderTrackerGrid(){
@@ -487,6 +686,7 @@ function renderTrackerGrid(){
 
     return `
       <div class="tracker-card">
+        <div class="tracker-health-bar" style="background:${h.color};"></div>
         <div class="tracker-card-top">
           <div class="tracker-plant-icon">🌱</div>
           <div>
@@ -499,13 +699,13 @@ function renderTrackerGrid(){
         </div>
         <div class="tracker-meta">
           ${lastWatered
-            ? `<span>💧 Last watered ${lastWatered.date}</span>`
-            : `<span class="muted">💧 Not watered yet</span>`}
+            ? `<div class="tracker-meta-item"><span class="tracker-meta-icon">💧</span><span>Last watered ${lastWatered.date}</span></div>`
+            : `<div class="tracker-meta-item muted"><span class="tracker-meta-icon">💧</span><span>Not watered yet</span></div>`}
           ${lastLog
-            ? `<span>📝 Checked in ${lastLog.date}</span>`
-            : `<span class="muted">No check-ins yet</span>`}
+            ? `<div class="tracker-meta-item"><span class="tracker-meta-icon">📝</span><span>Checked in ${lastLog.date}</span></div>`
+            : `<div class="tracker-meta-item muted"><span class="tracker-meta-icon">📝</span><span>No check-ins yet</span></div>`}
         </div>
-        <button class="btn checkin-btn" onclick="openCheckin(${p.id}, '${p.issue.replace(/'/g,"\\'")}')">
+        <button class="checkin-btn-new" onclick="openCheckin(${p.id}, '${p.issue.replace(/'/g,"\\'")}')">
           + Check In
         </button>
       </div>
@@ -560,6 +760,7 @@ function saveCheckin(){
   savePlantsToStorage(plants);
   closeCheckin();
   renderTrackerGrid();
+  renderStreakBanner();
 }
 
 /* ══ TIPS ══ */

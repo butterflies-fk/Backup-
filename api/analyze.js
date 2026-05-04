@@ -58,7 +58,7 @@ Return ONLY valid JSON (no markdown, no explanation, no extra text).
 Format:
 {
   "issue": "string",
-  "description": "string"
+  "description": "1-2 sentences describing what you see",
   "solution": "2-3 short actionable steps separated by newlines"
 }
 `
