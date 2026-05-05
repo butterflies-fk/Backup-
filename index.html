@@ -220,7 +220,7 @@
     <div class="plants-date-filter">
       <label>Filter:</label>
       <select class="plants-date-select" id="dateFilter" onchange="renderPlantList()">
-        <option value="all">All time</option>
+        <option value="all">All</option>
         <option value="today">Today</option>
         <option value="week">This week</option>
         <option value="month">This month</option>
@@ -677,7 +677,7 @@ function renderPlantCard(plantData){
         <select class="folder-assign-select" onchange="assignFolder(${plantData.id}, this.value)">${folderOptions}</select>
       </div>
       <div class="plant-card-actions">
-        <button class="btn-track-plant" onclick="goToTracker(${plantData.id})">📊 Track Plant</button>
+        <button class="btn-track-plant" onclick="goToTracker(${plantData.id})">Track Plant</button>
         <button class="btn-collapse-plant" onclick="collapsePlantCard(event, ${plantData.id})">↑ Close</button>
       </div>
     </div>
