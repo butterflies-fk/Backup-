@@ -1,4 +1,3 @@
-
 :root {
   --bg-start: #F0EDE4;
   --bg-end: #E4EDE4;
@@ -544,7 +543,33 @@ video, #snapshot {
   font-weight: 600;
 }
 .folder-chip.active-folder .folder-count { background: rgba(255,255,255,0.3); }
-.btn-add-folder {
+.folder-chip-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+.folder-chip-wrap .folder-chip {
+  padding-right: 28px;
+}
+.folder-delete-btn {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,100,100,0.15);
+  color: #ff6b6b;
+  font-size: 9px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+  padding: 0;
+  line-height: 1;
+}
+.folder-delete-btn:hover { background: #ff6b6b; color: white; }
   padding: 7px 14px;
   border-radius: 20px;
   border: 1.5px dashed rgba(111,143,107,0.4);
@@ -846,10 +871,7 @@ video, #snapshot {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   position: relative;
 }
-.tracker-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 36px rgba(0,0,0,0.11);
-}
+
 
 .tracker-health-bar { height: 4px; width: 100%; border-radius: 20px 20px 0 0; opacity: 0.85; }
 
