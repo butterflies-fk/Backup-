@@ -674,7 +674,7 @@ function renderPlantCard(plantData){
       <strong style="font-size:13px;color:var(--primary);">${plantData.issue}</strong>
       <p style="font-size:12px;margin-top:6px;opacity:0.75;line-height:1.5;">${shortDesc}</p>
       <p style="font-size:11px;opacity:0.45;margin-top:6px;">Saved ${plantData.savedDate || ''}</p>
-      <p style="font-size:11px;opacity:0.5;margin-top:4px;">📁 ${plantData.folder || 'Uncategorized'}</p>
+      <p class="plant-collapsed-folder" style="font-size:11px;opacity:0.5;margin-top:4px;">📁 ${plantData.folder || 'Uncategorized'}</p>
       <p style="font-size:11px;color:var(--primary);margin-top:6px;opacity:0.6;">Tap to expand ↓</p>
     </div>
 
@@ -726,6 +726,11 @@ function assignFolder(plantId, folder){
     plant.folder = folder;
     savePlantsToStorage(plants);
     renderFolders();
+    const card = document.querySelector('.plant-card[data-id="' + plantId + '"]');
+    if(card){
+      const folderLabel = card.querySelector('.plant-collapsed-folder');
+      if(folderLabel) folderLabel.textContent = '📁 ' + folder;
+    }
   }
 }
 
