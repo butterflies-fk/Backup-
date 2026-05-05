@@ -520,14 +520,15 @@ function renderFolders(){
     🌿 All <span class="folder-count">${plants.length}</span>
   </button>`;
 
-  const chips = folders.map(f => `
-    <div class="folder-chip-wrap">
+  const chips = folders.map(f => {
+    const isDefault = f === 'Uncategorized';
+    const deleteBtn = !isDefault ? `<button class="folder-delete-btn" onclick="deleteFolder('${f.replace(/'/g,"\\'")}', event)" title="Remove folder">✕</button>` : '';
+    return `<div class="folder-chip-wrap">
       <button class="folder-chip ${activeFolderFilter === f ? 'active-folder' : ''}" onclick="setFolderFilter('${f.replace(/'/g,"\\'")}')">
         📁 ${f} <span class="folder-count">${countFor(f)}</span>
-      </button>
-      <button class="folder-delete-btn" onclick="deleteFolder('${f.replace(/'/g,"\\'")}', event)" title="Remove folder">✕</button>
-    </div>
-  `).join('');
+      </button>${deleteBtn}
+    </div>`;
+  }).join('');
 
   list.innerHTML = allChip + chips;
 }

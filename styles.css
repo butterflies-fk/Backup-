@@ -547,19 +547,16 @@ video, #snapshot {
   position: relative;
   display: inline-flex;
   align-items: center;
+  gap: 4px;
 }
 .folder-chip-wrap .folder-chip {
-  padding-right: 28px;
+  padding-right: 10px;
 }
 .folder-delete-btn {
-  position: absolute;
-  right: 6px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 16px; height: 16px;
+  width: 18px; height: 18px;
   border-radius: 50%;
   border: none;
-  background: rgba(255,100,100,0.15);
+  background: rgba(255,100,100,0.12);
   color: #ff6b6b;
   font-size: 9px;
   font-weight: bold;
@@ -568,6 +565,7 @@ video, #snapshot {
   transition: all 0.2s;
   padding: 0;
   line-height: 1;
+  flex-shrink: 0;
 }
 .folder-delete-btn:hover { background: #ff6b6b; color: white; }
   padding: 7px 14px;
