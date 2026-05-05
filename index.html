@@ -42,7 +42,6 @@
 <div id="home" class="page active">
   <div class="hero">
     <div class="hero-glow"></div>
-
     <h1>Flora</h1>
     <p>Real-time plant diagnosis powered by AI vision</p>
     <button class="btn" onclick="showPage('scan')">Start Scanning</button>
@@ -51,11 +50,7 @@
       <div class="feature">🧠 AI Detection</div>
       <div class="feature">⚡ Instant Results</div>
     </div>
-
-    <!-- Seasonal Reminder — below features -->
     <div class="seasonal-card" id="seasonalCard"></div>
-
-    <!-- Plant of the Day -->
     <div class="potd-card">
       <span class="potd-label">🌱 Plant of the Day</span>
       <h3 class="potd-name" id="potdName"></h3>
@@ -147,11 +142,7 @@
 <div id="tracker" class="page">
   <div class="hero">
     <h1>Plant Tracker</h1>
-
-    <!-- Streak Banner -->
     <div class="streak-banner" id="streakBanner" style="display:none;"></div>
-
-    <!-- Watering Reminder Setup -->
     <div class="watering-reminder-box" id="wateringReminderBox">
       <span class="potd-label">💧 Watering Reminder</span>
       <p class="watering-reminder-desc">Get a browser notification to water your plants.</p>
@@ -162,11 +153,10 @@
           <option value="3" selected>Every 3 days</option>
           <option value="7">Every week</option>
         </select>
-        <button class="btn-primary-filled" style="margin-top:0;padding:10px 20px;font-size:13px;" onclick="setupWateringReminder()">Set Reminder</button>
+        <button class="btn-primary-filled" style="margin-top:0;padding:10px 20px;font-size:13px;width:auto;max-width:none;" onclick="setupWateringReminder()">Set Reminder</button>
       </div>
       <p class="reminder-status" id="reminderStatus"></p>
     </div>
-
     <div id="trackerEmpty" class="empty-state" style="display:none;">
       <div>🌱</div>
       <p>No plants saved yet.<br>Scan a plant and save it first!</p>
@@ -201,7 +191,22 @@
       <label>Any notes? <span style="opacity:0.5;font-weight:400;">(optional)</span></label>
       <textarea id="checkinNotes" placeholder="e.g. leaves look droopy, added new soil..."></textarea>
     </div>
-    <button class="btn-primary-filled" style="width:100%;margin-top:8px;" onclick="saveCheckin()">Save Check-in</button>
+    <button class="btn-primary-filled" style="width:100%;margin-top:8px;max-width:none;" onclick="saveCheckin()">Save Check-in</button>
+  </div>
+</div>
+
+<!-- Add Folder Modal -->
+<div id="folderModal" class="modal-overlay" style="display:none;" onclick="closeFolderModalOutside(event)">
+  <div class="modal-box" style="max-width:340px;">
+    <button class="modal-close" onclick="closeFolderModal()">✕</button>
+    <h2 class="modal-title">New Folder</h2>
+    <div class="modal-field">
+      <label>Folder Name</label>
+      <input id="folderNameInput" type="text" placeholder="e.g. Indoor Plants, Herbs..."
+        style="width:100%;padding:10px 14px;border-radius:12px;border:1.5px solid rgba(111,143,107,0.3);background:rgba(111,143,107,0.07);color:var(--text);font-family:'Poppins',sans-serif;font-size:14px;outline:none;"
+        onkeydown="if(event.key==='Enter') saveFolder()" />
+    </div>
+    <button class="btn-primary-filled" style="width:100%;margin-top:8px;max-width:none;" onclick="saveFolder()">Create Folder</button>
   </div>
 </div>
 
@@ -210,6 +215,27 @@
   <div class="hero">
     <h1>My Plants</h1>
     <p>Your saved diagnoses</p>
+
+    <!-- Date filter -->
+    <div class="plants-date-filter">
+      <label>Filter:</label>
+      <select class="plants-date-select" id="dateFilter" onchange="renderPlantList()">
+        <option value="all">All time</option>
+        <option value="today">Today</option>
+        <option value="week">This week</option>
+        <option value="month">This month</option>
+      </select>
+    </div>
+
+    <!-- Folder system -->
+    <div class="folders-section">
+      <div class="folders-header">
+        <span class="folders-title">📁 Folders</span>
+        <button class="btn-add-folder" onclick="openFolderModal()">+ New Folder</button>
+      </div>
+      <div class="folders-list" id="foldersList"></div>
+    </div>
+
     <div id="plantList" class="plant-grid"></div>
     <div id="emptyState" class="empty-state">
       <div>🌱</div>
@@ -224,7 +250,6 @@
   <div class="hero">
     <h1>About Flora</h1>
     <p>Built for plant lovers, powered by AI</p>
-
     <div class="about-wrapper">
       <div class="about-grid">
         <div class="about-card-item">
@@ -248,7 +273,6 @@
           <p class="about-card-body">All your plant data is stored locally on your device. We don't collect or store any personal information. Your photos are only used temporarily to generate a diagnosis and are never saved.</p>
         </div>
       </div>
-
       <div class="about-cta-strip">
         <div class="about-cta-text">
           <span class="about-cta-label">Ready to diagnose your plants?</span>
@@ -271,6 +295,7 @@ let lastDiagnosis = null;
 let currentCheckinId = null;
 let checkinWatered = false;
 let checkinHealth = 'thriving';
+let activeFolderFilter = 'all';
 
 /* ── SPLASH ── */
 (function(){
@@ -290,6 +315,7 @@ window.onload = () => {
   renderPlantOfDay();
   renderSeasonalReminder();
   loadReminderStatus();
+  renderFolders();
 };
 
 function showPage(id){
@@ -298,7 +324,7 @@ function showPage(id){
   document.querySelectorAll('.nav-links a').forEach(a => {
     a.classList.toggle('active-nav', a.dataset.page === id);
   });
-  if(id === 'plants') updateEmptyState();
+  if(id === 'plants'){ renderPlantList(); updateEmptyState(); }
   if(id === 'tracker'){ renderTrackerGrid(); renderStreakBanner(); }
   if(id !== 'scan') resetCameraUI();
 }
@@ -471,7 +497,68 @@ async function analyzeWithGemini(imageBase64){
   }
 }
 
-/* ── My Plants ── */
+/* ══ FOLDERS ══ */
+function getFolders(){
+  return JSON.parse(localStorage.getItem('flora_folders') || '["Uncategorized"]');
+}
+function saveFoldersToStorage(folders){
+  localStorage.setItem('flora_folders', JSON.stringify(folders));
+}
+
+function renderFolders(){
+  const folders = getFolders();
+  const plants  = getSavedPlants();
+  const list    = document.getElementById('foldersList');
+  if(!list) return;
+
+  const countFor = (folder) => {
+    if(folder === 'all') return plants.length;
+    return plants.filter(p => (p.folder || 'Uncategorized') === folder).length;
+  };
+
+  const allChip = `<button class="folder-chip ${activeFolderFilter === 'all' ? 'active-folder' : ''}" onclick="setFolderFilter('all')">
+    🌿 All <span class="folder-count">${plants.length}</span>
+  </button>`;
+
+  const chips = folders.map(f => `
+    <button class="folder-chip ${activeFolderFilter === f ? 'active-folder' : ''}" onclick="setFolderFilter('${f.replace(/'/g,"\\'")}')">
+      📁 ${f} <span class="folder-count">${countFor(f)}</span>
+    </button>
+  `).join('');
+
+  list.innerHTML = allChip + chips;
+}
+
+function setFolderFilter(folder){
+  activeFolderFilter = folder;
+  renderFolders();
+  renderPlantList();
+}
+
+function openFolderModal(){
+  document.getElementById('folderNameInput').value = '';
+  document.getElementById('folderModal').style.display = 'flex';
+  setTimeout(() => document.getElementById('folderNameInput').focus(), 100);
+}
+function closeFolderModal(){
+  document.getElementById('folderModal').style.display = 'none';
+}
+function closeFolderModalOutside(e){
+  if(e.target === document.getElementById('folderModal')) closeFolderModal();
+}
+function saveFolder(){
+  const name = document.getElementById('folderNameInput').value.trim();
+  if(!name) return;
+  const folders = getFolders();
+  if(!folders.includes(name)){
+    folders.push(name);
+    saveFoldersToStorage(folders);
+  }
+  closeFolderModal();
+  renderFolders();
+}
+
+/* ══ MY PLANTS ══ */
 function getSavedPlants(){ return JSON.parse(localStorage.getItem('flora_plants') || '[]'); }
 function savePlantsToStorage(plants){ localStorage.setItem('flora_plants', JSON.stringify(plants)); }
 
@@ -482,18 +569,53 @@ function savePlant(){
     ...lastDiagnosis,
     id: Date.now(),
     savedDate: new Date().toLocaleDateString(),
+    savedTimestamp: Date.now(),
     logs: [],
-    health: 'okay'
+    health: 'okay',
+    folder: 'Uncategorized'
   };
   saved.push(plant);
   savePlantsToStorage(saved);
-  renderPlantCard(plant);
+  renderFolders();
+  renderPlantList();
   updateEmptyState();
   showPage('plants');
 }
 
 function loadSavedPlants(){
-  getSavedPlants().forEach(plant => renderPlantCard(plant));
+  renderPlantList();
+  updateEmptyState();
+}
+
+/* Filter plants by date and folder */
+function getFilteredPlants(){
+  let plants = getSavedPlants();
+  const dateFilter = document.getElementById('dateFilter');
+  const period = dateFilter ? dateFilter.value : 'all';
+  const now = Date.now();
+
+  if(period === 'today'){
+    const startOfDay = new Date(); startOfDay.setHours(0,0,0,0);
+    plants = plants.filter(p => (p.savedTimestamp || 0) >= startOfDay.getTime());
+  } else if(period === 'week'){
+    plants = plants.filter(p => (p.savedTimestamp || 0) >= now - 7 * 24 * 60 * 60 * 1000);
+  } else if(period === 'month'){
+    plants = plants.filter(p => (p.savedTimestamp || 0) >= now - 30 * 24 * 60 * 60 * 1000);
+  }
+
+  if(activeFolderFilter !== 'all'){
+    plants = plants.filter(p => (p.folder || 'Uncategorized') === activeFolderFilter);
+  }
+
+  return plants;
+}
+
+function renderPlantList(){
+  const list = document.getElementById('plantList');
+  if(!list) return;
+  list.innerHTML = '';
+  const plants = getFilteredPlants();
+  plants.forEach(plant => renderPlantCard(plant));
   updateEmptyState();
 }
 
@@ -502,33 +624,118 @@ function renderPlantCard(plantData){
   const card = document.createElement('div');
   card.className = 'plant-card';
   card.dataset.id = plantData.id;
+
   const shortDesc = (plantData.description || '').length > 120
     ? plantData.description.substring(0, 120) + '...'
     : plantData.description;
+
+  const solutionSteps = plantData.solution
+    ? plantData.solution.split(/\n|(?:\d+\.\s)/).map(s => s.trim()).filter(Boolean)
+    : [];
+
+  const solutionHtml = solutionSteps.length > 0 ? `
+    <div class="plant-expand-solution">
+      <div class="plant-expand-solution-title">What to do</div>
+      ${solutionSteps.map(s => `
+        <div class="plant-expand-step">
+          <span class="plant-expand-dot">✓</span>
+          <span>${s}</span>
+        </div>`).join('')}
+    </div>` : '';
+
+  const folders = getFolders();
+  const folderOptions = folders.map(f =>
+    `<option value="${f}" ${(plantData.folder || 'Uncategorized') === f ? 'selected' : ''}>${f}</option>`
+  ).join('');
+
   card.innerHTML = `
-    <button class="remove-btn" onclick="removePlant(this)">✕</button>
-    <div style="font-size:28px;margin-bottom:8px;">🌱</div>
-    <strong style="font-size:13px;color:var(--primary);">${plantData.issue}</strong>
-    <p style="font-size:12px;margin-top:6px;opacity:0.75;line-height:1.5;">${shortDesc}</p>
-    <p style="font-size:11px;opacity:0.45;margin-top:6px;">Saved ${plantData.savedDate || ''}</p>
+    <button class="remove-btn" onclick="removePlant(event, ${plantData.id})">✕</button>
+
+    <!-- Collapsed view (click to expand) -->
+    <div class="plant-card-collapsed" onclick="expandPlantCard(${plantData.id})">
+      <div style="font-size:28px;margin-bottom:8px;">🌱</div>
+      <strong style="font-size:13px;color:var(--primary);">${plantData.issue}</strong>
+      <p style="font-size:12px;margin-top:6px;opacity:0.75;line-height:1.5;">${shortDesc}</p>
+      <p style="font-size:11px;opacity:0.45;margin-top:6px;">Saved ${plantData.savedDate || ''}</p>
+      <p style="font-size:11px;opacity:0.5;margin-top:4px;">📁 ${plantData.folder || 'Uncategorized'}</p>
+      <p style="font-size:11px;color:var(--primary);margin-top:6px;opacity:0.6;">Tap to expand ↓</p>
+    </div>
+
+    <!-- Expanded view -->
+    <div class="plant-card-expanded-content">
+      <div class="plant-expand-header">
+        <div class="plant-expand-icon">🌱</div>
+        <div>
+          <p class="plant-expand-title">${plantData.issue}</p>
+          <p class="plant-expand-date">Saved ${plantData.savedDate || ''}</p>
+        </div>
+      </div>
+      <p class="plant-expand-desc">${plantData.description || ''}</p>
+      ${solutionHtml}
+      <div class="modal-field" style="margin-top:12px;">
+        <label style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px;color:var(--primary);opacity:0.7;display:block;margin-bottom:6px;">Move to folder</label>
+        <select class="folder-assign-select" onchange="assignFolder(${plantData.id}, this.value)">${folderOptions}</select>
+      </div>
+      <div class="plant-card-actions">
+        <button class="btn-track-plant" onclick="goToTracker(${plantData.id})">📊 Track Plant</button>
+        <button class="btn-collapse-plant" onclick="collapsePlantCard(event, ${plantData.id})">↑ Close</button>
+      </div>
+    </div>
   `;
+
   list.appendChild(card);
 }
 
-function removePlant(btnElement){
-  const card = btnElement.parentElement;
-  const id = Number(card.dataset.id);
+function expandPlantCard(id){
+  const card = document.querySelector(`.plant-card[data-id="${id}"]`);
+  if(!card) return;
+  // Collapse any other open card first
+  document.querySelectorAll('.plant-card.expanded').forEach(c => {
+    if(c !== card) c.classList.remove('expanded');
+  });
+  card.classList.add('expanded');
+}
+
+function collapsePlantCard(e, id){
+  e.stopPropagation();
+  const card = document.querySelector(`.plant-card[data-id="${id}"]`);
+  if(card) card.classList.remove('expanded');
+}
+
+function assignFolder(plantId, folder){
+  const plants = getSavedPlants();
+  const plant = plants.find(p => p.id === plantId);
+  if(plant){
+    plant.folder = folder;
+    savePlantsToStorage(plants);
+    renderFolders();
+  }
+}
+
+function goToTracker(plantId){
+  showPage('tracker');
+}
+
+function removePlant(e, id){
+  e.stopPropagation();
+  const card = document.querySelector(`.plant-card[data-id="${id}"]`);
+  if(!card) return;
   let saved = getSavedPlants().filter(p => p.id !== id);
   savePlantsToStorage(saved);
   card.style.opacity = '0';
   card.style.transform = 'scale(0.8)';
   card.style.transition = 'all 0.3s ease';
-  setTimeout(() => { card.remove(); updateEmptyState(); }, 300);
+  setTimeout(() => {
+    card.remove();
+    updateEmptyState();
+    renderFolders();
+  }, 300);
 }
 
 function updateEmptyState(){
   const list  = document.getElementById('plantList');
   const empty = document.getElementById('emptyState');
+  if(!list || !empty) return;
   empty.style.display = list.children.length === 0 ? 'block' : 'none';
 }
 
@@ -559,7 +766,6 @@ function renderPlantOfDay(){
 function renderSeasonalReminder(){
   const month = new Date().getMonth();
   let icon, title, tip;
-
   if(month >= 2 && month <= 4){
     icon = '🌸'; title = "It's Spring!";
     tip = "Perfect time to repot root-bound plants, start fertilizing again, and move plants to brighter spots.";
@@ -573,7 +779,6 @@ function renderSeasonalReminder(){
     icon = '❄️'; title = "It's Winter!";
     tip = "Water sparingly — most plants are dormant. Keep them away from cold drafts and dry heating vents.";
   }
-
   document.getElementById('seasonalCard').innerHTML = `
     <p style="font-size:13px;opacity:0.7;margin:0;font-style:italic;font-weight:300;">${icon} <strong style="font-weight:600;font-style:normal;">${title}</strong> — ${tip}</p>
   `;
@@ -582,10 +787,7 @@ function renderSeasonalReminder(){
 /* ══ WATERING REMINDER ══ */
 function loadReminderStatus(){
   const saved = localStorage.getItem('flora_reminder_days');
-  if(saved){
-    document.getElementById('reminderFreq').value = saved;
-    document.getElementById('reminderStatus').innerText = ` Reminder set!`;
-  }
+  if(saved) document.getElementById('reminderFreq').value = saved;
 }
 
 async function setupWateringReminder(){
@@ -593,25 +795,32 @@ async function setupWateringReminder(){
   const statusEl = document.getElementById('reminderStatus');
 
   if(!('Notification' in window)){
-    statusEl.innerText = '❌ Your browser does not support notifications.';
+    showReminderStatus('❌ Your browser does not support notifications.', statusEl);
     return;
   }
 
   const permission = await Notification.requestPermission();
   if(permission !== 'granted'){
-    statusEl.innerText = '❌ Notification permission denied. Please enable it in your browser settings.';
+    showReminderStatus('❌ Permission denied. Enable notifications in browser settings.', statusEl);
     return;
   }
 
   localStorage.setItem('flora_reminder_days', days);
   localStorage.setItem('flora_reminder_set', Date.now());
-  statusEl.innerText = `Reminder set!`;
 
-  new Notification('Flora AI 🌱', {
-    body: `Watering reminder set!`,
-  });
+  showReminderStatus('✅ Reminder set!', statusEl);
 
+  new Notification('Flora AI 🌱', { body: 'Watering reminder set!' });
   scheduleNextWateringNotification(days);
+}
+
+function showReminderStatus(msg, el){
+  el.innerText = msg;
+  el.classList.add('visible');
+  setTimeout(() => {
+    el.classList.remove('visible');
+    setTimeout(() => { el.innerText = ''; }, 400);
+  }, 3000);
 }
 
 function scheduleNextWateringNotification(days){
@@ -634,13 +843,11 @@ function getCheckinStreak(){
   const sorted = [...allDates].sort((a, b) => new Date(b) - new Date(a));
   if(sorted.length === 0) return 0;
   let streak = 0;
-  let current = new Date();
-  current.setHours(0,0,0,0);
+  let current = new Date(); current.setHours(0,0,0,0);
   for(let i = 0; i < sorted.length; i++){
-    const d = new Date(sorted[i]);
-    d.setHours(0,0,0,0);
+    const d = new Date(sorted[i]); d.setHours(0,0,0,0);
     const diff = Math.round((current - d) / (1000*60*60*24));
-    if(diff === i) { streak++; } else { break; }
+    if(diff === i){ streak++; } else { break; }
   }
   return streak;
 }

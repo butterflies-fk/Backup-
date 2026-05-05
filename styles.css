@@ -1,3 +1,4 @@
+
 :root {
   --bg-start: #F0EDE4;
   --bg-end: #E4EDE4;
@@ -113,7 +114,7 @@ body {
 .toggle-switch input:checked ~ .toggle-track .toggle-thumb { transform: translateX(22px); }
 .toggle-switch input:checked ~ .toggle-track .toggle-thumb::after { content: '☀️'; }
 
-/* ── BUTTONS ── */
+/* ── BUTTONS (hollow by default, filled on hover/active) ── */
 .btn {
   background: transparent;
   color: var(--primary);
@@ -135,9 +136,10 @@ body {
   box-shadow: 0 6px 20px rgba(111,143,107,0.35);
 }
 
+/* ALL primary-filled buttons are now hollow with fill-on-hover */
 .btn-primary-filled {
-  background: var(--primary);
-  color: white;
+  background: transparent;
+  color: var(--primary);
   padding: 13px 36px;
   border-radius: 25px;
   border: 2px solid var(--primary);
@@ -149,9 +151,12 @@ body {
   transition: all 0.3s ease;
   display: inline-block;
   letter-spacing: 0.3px;
-  box-shadow: 0 6px 20px rgba(111,143,107,0.35);
 }
-.btn-primary-filled:hover {
+.btn-primary-filled:hover,
+.btn-primary-filled:focus,
+.btn-primary-filled:active {
+  background: var(--primary);
+  color: white;
   transform: scale(1.05);
   box-shadow: 0 10px 28px rgba(111,143,107,0.5);
 }
@@ -178,12 +183,11 @@ body {
   border-radius: 0 0 24px 24px;
 }
 
-/* FIX 1: Responsive background — use cover + center + no fixed on mobile */
 #home .hero {
   background-image: url('bg light mode.png');
   background-size: cover;
   background-position: center top;
-  background-attachment: scroll; /* scroll works on mobile, fixed often breaks */
+  background-attachment: scroll;
 }
 
 .dark #home .hero {
@@ -191,12 +195,8 @@ body {
 }
 
 @media (min-width: 1024px) {
-  #home .hero {
-    background-attachment: fixed;
-  }
-  .dark #home .hero {
-    background-attachment: fixed;
-  }
+  #home .hero { background-attachment: fixed; }
+  .dark #home .hero { background-attachment: fixed; }
 }
 
 .hero-glow {
@@ -242,6 +242,7 @@ body {
   background: transparent;
   transition: all 0.3s ease;
 }
+.tab:hover { background: var(--primary); color: white; }
 .tab.active-tab { background: var(--primary); color: white; }
 
 /* ── CAMERA BOX ── */
@@ -379,21 +380,13 @@ video, #snapshot {
   font-style: normal;
 }
 
-/* Solution box */
-.result-solution-box {
-  background: rgba(111,143,107,0.06);
-}
+.result-solution-box { background: rgba(111,143,107,0.06); }
 .solution-steps { display: flex; flex-direction: column; gap: 8px; }
 .solution-step {
   display: flex; align-items: flex-start; gap: 10px;
   font-size: 13.5px; line-height: 1.6;
 }
-.solution-dot {
-  color: var(--primary);
-  font-weight: 700;
-  flex-shrink: 0;
-  margin-top: 1px;
-}
+.solution-dot { color: var(--primary); font-weight: 700; flex-shrink: 0; margin-top: 1px; }
 
 /* ── FEATURES ── */
 .features {
@@ -408,7 +401,7 @@ video, #snapshot {
   cursor: default;
 }
 
-/* ── SEASONAL CARD (home page top) ── */
+/* ── SEASONAL CARD ── */
 .seasonal-card {
   margin: 0 auto 20px;
   max-width: 480px;
@@ -454,7 +447,9 @@ video, #snapshot {
   font-style: normal;
 }
 
-/* ── MY PLANTS PAGE: toolbar ── */
+/* ══ MY PLANTS PAGE ══ */
+
+/* Toolbar */
 .plants-toolbar {
   display: flex;
   align-items: center;
@@ -466,13 +461,16 @@ video, #snapshot {
   width: 90%;
 }
 
-/* FIX 3: Date filter */
+/* Date filter */
 .plants-date-filter {
   display: flex;
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
   justify-content: center;
+  margin: 0 auto 12px;
+  max-width: 860px;
+  width: 90%;
 }
 .plants-date-filter label {
   font-size: 12px;
@@ -496,7 +494,7 @@ video, #snapshot {
 }
 .plants-date-select:focus { border-color: var(--primary); }
 
-/* FIX 4: Folder system */
+/* Folder system */
 .folders-section {
   max-width: 860px;
   width: 90%;
@@ -559,11 +557,13 @@ video, #snapshot {
 }
 .btn-add-folder:hover { border-color: var(--primary); background: rgba(111,143,107,0.07); }
 
-/* FIX 2: My Plants GRID — clickable/expandable */
+/* Plant grid */
 .plant-grid {
   display: flex; flex-wrap: wrap;
   justify-content: center; gap: 16px; margin-top: 10px;
 }
+
+/* ── PLANT CARD: collapsed ── */
 .plant-card {
   background: var(--card); padding: 18px;
   border-radius: 18px; width: 180px;
@@ -572,25 +572,57 @@ video, #snapshot {
   backdrop-filter: blur(10px);
   position: relative; text-align: left;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, width 0.3s ease;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, width 0.3s ease, padding 0.3s ease;
+  overflow: hidden;
 }
 .plant-card:hover {
   transform: translateY(-3px);
   box-shadow: 0 14px 32px rgba(0,0,0,0.1);
 }
+
+/* ── PLANT CARD: expanded ── */
 .plant-card.expanded {
   width: 340px;
   cursor: default;
+  transform: none;
+  box-shadow: 0 18px 48px rgba(0,0,0,0.13);
+  border-color: rgba(111,143,107,0.3);
+}
+.plant-card.expanded:hover {
+  transform: none;
 }
 
 .plant-card-collapsed { display: block; }
 .plant-card.expanded .plant-card-collapsed { display: none; }
 
-.plant-card-expanded-content {
-  display: none;
+.plant-card-expanded-content { display: none; }
+.plant-card.expanded .plant-card-expanded-content { display: block; animation: fadeIn 0.22s ease; }
+
+.plant-expand-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
 }
-.plant-card.expanded .plant-card-expanded-content {
-  display: block;
+.plant-expand-icon {
+  font-size: 28px;
+  background: rgba(111,143,107,0.1);
+  border-radius: 12px;
+  width: 46px; height: 46px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.plant-expand-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--primary);
+  line-height: 1.3;
+  margin: 0;
+}
+.plant-expand-date {
+  font-size: 11px;
+  opacity: 0.45;
+  margin-top: 2px;
 }
 
 .plant-expand-desc {
@@ -622,33 +654,35 @@ video, #snapshot {
 .plant-expand-step:last-child { margin-bottom: 0; }
 .plant-expand-dot { color: var(--primary); font-weight: 700; flex-shrink: 0; }
 
+/* Plant card action buttons */
 .plant-card-actions {
   display: flex;
   gap: 6px;
-  margin-top: 12px;
+  margin-top: 14px;
   flex-wrap: wrap;
 }
-/* FIX 5: Track Plant button on plants page */
 .btn-track-plant {
   flex: 1;
-  padding: 8px 10px;
+  padding: 9px 10px;
   border-radius: 12px;
   border: 1.5px solid var(--primary);
-  background: var(--primary);
-  color: white;
+  background: transparent;
+  color: var(--primary);
   font-family: 'Poppins', sans-serif;
   font-size: 11px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
   text-align: center;
 }
 .btn-track-plant:hover {
+  background: var(--primary);
+  color: white;
   transform: scale(1.04);
-  box-shadow: 0 4px 14px rgba(111,143,107,0.4);
+  box-shadow: 0 4px 14px rgba(111,143,107,0.35);
 }
 .btn-collapse-plant {
-  padding: 8px 10px;
+  padding: 9px 12px;
   border-radius: 12px;
   border: 1.5px solid rgba(111,143,107,0.3);
   background: transparent;
@@ -679,6 +713,7 @@ video, #snapshot {
   border-radius:50%; display:flex; align-items:center; justify-content:center;
   font-size:12px; font-weight:bold; cursor:pointer;
   transition:all 0.2s; border:none;
+  z-index: 2;
 }
 .remove-btn:hover { background:#ff6b6b; color:white; }
 
@@ -780,17 +815,13 @@ video, #snapshot {
   box-shadow:0 4px 16px rgba(0,0,0,0.05);
   cursor: default;
 }
-
 .tip-icon { font-size:26px; flex-shrink:0; margin-top:2px; }
 .tip-content { flex:1; }
 .tip-title {
   display:block; font-size:14px;
   color:var(--primary); margin-bottom:5px; font-weight:600;
 }
-.tip-body {
-  font-size:13px; line-height:1.65;
-  opacity:0.82; margin:0; font-style:normal;
-}
+.tip-body { font-size:13px; line-height:1.65; opacity:0.82; margin:0; font-style:normal; }
 
 /* ══ TRACKER PAGE ══ */
 .tracker-grid {
@@ -820,63 +851,31 @@ video, #snapshot {
   box-shadow: 0 12px 36px rgba(0,0,0,0.11);
 }
 
-/* Coloured top accent bar */
-.tracker-health-bar {
-  height: 4px;
-  width: 100%;
-  border-radius: 20px 20px 0 0;
-  opacity: 0.85;
-}
+.tracker-health-bar { height: 4px; width: 100%; border-radius: 20px 20px 0 0; opacity: 0.85; }
 
 .tracker-card-top {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  display: flex; align-items: center; gap: 10px;
   padding: 16px 18px 10px;
 }
 .tracker-plant-icon {
-  font-size: 28px;
-  flex-shrink: 0;
+  font-size: 28px; flex-shrink: 0;
   background: rgba(111,143,107,0.1);
   border-radius: 12px;
   width: 44px; height: 44px;
   display: flex; align-items: center; justify-content: center;
 }
-.tracker-name {
-  font-size: 14px;
-  color: var(--primary);
-  display: block;
-  line-height: 1.3;
-  font-weight: 600;
-}
+.tracker-name { font-size: 14px; color: var(--primary); display: block; line-height: 1.3; font-weight: 600; }
 .tracker-date { font-size: 11px; opacity: 0.45; margin-top: 2px; }
 
 .tracker-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
-  border: 1px solid;
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 12px; border-radius: 20px;
+  font-size: 12px; font-weight: 600; border: 1px solid;
   margin: 0 18px 12px;
 }
 
-.tracker-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 0 18px 14px;
-}
-.tracker-meta-item {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 12px;
-  opacity: 0.78;
-  line-height: 1.4;
-}
+.tracker-meta { display: flex; flex-direction: column; gap: 6px; padding: 0 18px 14px; }
+.tracker-meta-item { display: flex; align-items: center; gap: 7px; font-size: 12px; opacity: 0.78; line-height: 1.4; }
 .tracker-meta-item.muted { opacity: 0.38; }
 .tracker-meta-icon { font-size: 14px; flex-shrink: 0; }
 
@@ -896,10 +895,7 @@ video, #snapshot {
   display: block;
   letter-spacing: 0.2px;
 }
-.checkin-btn-new:hover {
-  background: var(--primary);
-  color: white;
-}
+.checkin-btn-new:hover { background: var(--primary); color: white; }
 
 /* ── Streak Banner ── */
 .streak-banner {
@@ -914,7 +910,7 @@ video, #snapshot {
   width: 90%;
 }
 
-/* FIX 6 & 7: Watering Reminder — hollow button, no pre-shown status */
+/* ── Watering Reminder ── */
 .watering-reminder-box {
   background: var(--card);
   border-radius: 20px;
@@ -927,199 +923,87 @@ video, #snapshot {
   box-shadow: 0 6px 20px rgba(0,0,0,0.06);
   width: 90%;
 }
-.watering-reminder-desc {
-  font-size: 13px;
-  opacity: 0.7;
-  margin: 6px 0 14px;
-  font-style: normal;
-}
-.watering-reminder-row {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  flex-wrap: wrap;
-}
+.watering-reminder-desc { font-size: 13px; opacity: 0.7; margin: 6px 0 14px; font-style: normal; }
+.watering-reminder-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .reminder-select {
-  flex: 1;
-  min-width: 140px;
-  padding: 10px 14px;
-  border-radius: 12px;
+  flex: 1; min-width: 140px;
+  padding: 10px 14px; border-radius: 12px;
   border: 1.5px solid rgba(111,143,107,0.3);
   background: rgba(111,143,107,0.07);
-  color: var(--text);
-  font-family: 'Poppins', sans-serif;
-  font-size: 13px;
-  outline: none;
+  color: var(--text); font-family: 'Poppins', sans-serif; font-size: 13px; outline: none;
 }
 
-/* FIX 7: Hollow reminder button, filled on hover */
-.btn-set-reminder {
-  background: transparent;
-  color: var(--primary);
-  padding: 10px 20px;
-  border-radius: 25px;
-  border: 2px solid var(--primary);
-  cursor: pointer;
-  font-family: 'Poppins', sans-serif;
-  font-size: 13px;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  letter-spacing: 0.2px;
-  white-space: nowrap;
-}
-.btn-set-reminder:hover,
-.btn-set-reminder:focus {
-  background: var(--primary);
-  color: white;
-  box-shadow: 0 6px 20px rgba(111,143,107,0.35);
-}
-
-/* FIX 6: Reminder status — hidden by default, shown via JS, fades out */
+/* Reminder status — hidden by default, fades in then out */
 .reminder-status {
   font-size: 12px;
   margin: 10px 0 0;
-  opacity: 0;
   color: var(--primary);
+  opacity: 0;
   transition: opacity 0.4s ease;
-  height: 18px; /* keep layout stable */
+  min-height: 18px;
 }
-.reminder-status.visible {
-  opacity: 1;
-}
+.reminder-status.visible { opacity: 1; }
 
 /* ══ ABOUT PAGE ══ */
-.about-wrapper {
-  max-width: 860px;
-  margin: 20px auto 0;
-  padding: 0 20px 60px;
-  width: 100%;
-}
-
-.about-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
-  margin-bottom: 20px;
-}
-
+.about-wrapper { max-width: 860px; margin: 20px auto 0; padding: 0 20px 60px; width: 100%; }
+.about-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 20px; }
 .about-card-item {
-  background: var(--card);
-  border-radius: 22px;
-  padding: 26px 24px;
-  border: 1px solid rgba(111,143,107,0.15);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 6px 24px rgba(0,0,0,0.06);
-  text-align: left;
+  background: var(--card); border-radius: 22px; padding: 26px 24px;
+  border: 1px solid rgba(111,143,107,0.15); backdrop-filter: blur(12px);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.06); text-align: left;
 }
-
 .about-card-icon {
-  font-size: 30px;
-  margin-bottom: 12px;
-  display: inline-block;
-  background: rgba(111,143,107,0.12);
-  border-radius: 14px;
-  width: 52px; height: 52px;
-  line-height: 52px;
-  text-align: center;
+  font-size: 30px; margin-bottom: 12px; display: inline-block;
+  background: rgba(111,143,107,0.12); border-radius: 14px;
+  width: 52px; height: 52px; line-height: 52px; text-align: center;
 }
-.about-card-heading {
-  font-family: 'Yeseva One', serif;
-  color: var(--primary);
-  font-size: 17px;
-  margin: 0 0 10px;
-}
-.about-card-body {
-  font-size: 13px;
-  line-height: 1.75;
-  opacity: 0.8;
-  margin: 0;
-  font-style: normal;
-}
-
-/* CTA strip */
+.about-card-heading { font-family: 'Yeseva One', serif; color: var(--primary); font-size: 17px; margin: 0 0 10px; }
+.about-card-body { font-size: 13px; line-height: 1.75; opacity: 0.8; margin: 0; font-style: normal; }
 .about-cta-strip {
   background: linear-gradient(135deg, rgba(111,143,107,0.14), rgba(111,143,107,0.06));
-  border: 1px solid rgba(111,143,107,0.25);
-  border-radius: 20px;
-  padding: 22px 28px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
-  text-align: left;
+  border: 1px solid rgba(111,143,107,0.25); border-radius: 20px;
+  padding: 22px 28px; display: flex; align-items: center;
+  justify-content: space-between; gap: 16px; flex-wrap: wrap; text-align: left;
 }
 .about-cta-text { flex: 1; min-width: 180px; }
-.about-cta-label {
-  display: block;
-  font-weight: 600;
-  font-size: 15px;
-  color: var(--primary);
-  margin-bottom: 4px;
-}
-.about-cta-sub {
-  font-size: 13px;
-  opacity: 0.65;
-  margin: 0;
-  font-style: normal;
-}
-.about-cta-strip .btn {
-  margin-top: 0;
-  flex-shrink: 0;
-}
+.about-cta-label { display: block; font-weight: 600; font-size: 15px; color: var(--primary); margin-bottom: 4px; }
+.about-cta-sub { font-size: 13px; opacity: 0.65; margin: 0; font-style: normal; }
+.about-cta-strip .btn { margin-top: 0; flex-shrink: 0; }
 
 /* ══ MODALS ══ */
 .modal-overlay {
-  position:fixed; inset:0;
-  background:rgba(0,0,0,0.4);
-  backdrop-filter:blur(6px);
-  z-index:500; display:flex;
-  align-items:center; justify-content:center; padding:20px;
+  position:fixed; inset:0; background:rgba(0,0,0,0.4);
+  backdrop-filter:blur(6px); z-index:500;
+  display:flex; align-items:center; justify-content:center; padding:20px;
 }
 .modal-box {
   background:var(--card); backdrop-filter:blur(20px);
   border-radius:24px; padding:28px 26px;
-  width:100%; max-width:400px; max-height:90vh;
-  overflow-y:auto;
-  border:1px solid rgba(111,143,107,0.2);
-  box-shadow:0 20px 60px rgba(0,0,0,0.2);
-  position:relative; text-align:left;
-  animation:fadeIn 0.25s ease;
+  width:100%; max-width:400px; max-height:90vh; overflow-y:auto;
+  border:1px solid rgba(111,143,107,0.2); box-shadow:0 20px 60px rgba(0,0,0,0.2);
+  position:relative; text-align:left; animation:fadeIn 0.25s ease;
 }
-.modal-title {
-  font-family:'Yeseva One',serif;
-  color:var(--primary); font-size:20px; margin:0 0 20px;
-}
+.modal-title { font-family:'Yeseva One',serif; color:var(--primary); font-size:20px; margin:0 0 20px; }
 .modal-close {
   position:absolute; top:14px; right:14px;
   background:rgba(255,100,100,0.1); color:#ff6b6b;
-  border:none; border-radius:50%;
-  width:28px; height:28px; font-size:13px;
-  cursor:pointer; display:flex; align-items:center; justify-content:center;
-  transition:all 0.2s;
+  border:none; border-radius:50%; width:28px; height:28px; font-size:13px;
+  cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s;
 }
 .modal-close:hover { background:#ff6b6b; color:white; }
-
 .modal-field { margin-bottom:16px; }
 .modal-field label {
   display:block; font-size:12px; font-weight:600;
-  color:var(--primary); letter-spacing:0.4px;
-  text-transform:uppercase; margin-bottom:8px;
+  color:var(--primary); letter-spacing:0.4px; text-transform:uppercase; margin-bottom:8px;
 }
 .modal-field textarea {
-  width:100%;
-  background:rgba(111,143,107,0.07);
-  border:1.5px solid rgba(111,143,107,0.2);
-  border-radius:12px; padding:10px 14px;
-  font-family:'Poppins',sans-serif; font-size:14px;
-  color:var(--text); outline:none;
-  transition:border-color 0.2s; resize:vertical; min-height:80px;
+  width:100%; background:rgba(111,143,107,0.07);
+  border:1.5px solid rgba(111,143,107,0.2); border-radius:12px; padding:10px 14px;
+  font-family:'Poppins',sans-serif; font-size:14px; color:var(--text);
+  outline:none; transition:border-color 0.2s; resize:vertical; min-height:80px;
 }
 .modal-field textarea:focus { border-color:var(--primary); }
-
-.health-options {
-  display:flex; flex-wrap:wrap; gap:8px;
-}
+.health-options { display:flex; flex-wrap:wrap; gap:8px; }
 .health-btn {
   padding:8px 14px; border-radius:20px;
   border:1.5px solid rgba(111,143,107,0.3);
@@ -1132,15 +1016,10 @@ video, #snapshot {
 
 /* Folder assign modal */
 .folder-assign-select {
-  width: 100%;
-  padding: 10px 14px;
-  border-radius: 12px;
-  border: 1.5px solid rgba(111,143,107,0.3);
-  background: rgba(111,143,107,0.07);
-  color: var(--text);
-  font-family: 'Poppins', sans-serif;
-  font-size: 13px;
-  outline: none;
+  width:100%; padding:10px 14px; border-radius:12px;
+  border:1.5px solid rgba(111,143,107,0.3);
+  background:rgba(111,143,107,0.07); color:var(--text);
+  font-family:'Poppins',sans-serif; font-size:13px; outline:none;
 }
 
 /* ── RESPONSIVE ── */
