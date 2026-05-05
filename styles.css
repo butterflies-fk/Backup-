@@ -178,15 +178,25 @@ body {
   border-radius: 0 0 24px 24px;
 }
 
+/* FIX 1: Responsive background — use cover + center + no fixed on mobile */
 #home .hero {
-  background-image: url('bg\ light\ mode.png');
+  background-image: url('bg light mode.png');
   background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
+  background-position: center top;
+  background-attachment: scroll; /* scroll works on mobile, fixed often breaks */
 }
 
 .dark #home .hero {
-  background-image: url('bg\ dark\ mode.png');
+  background-image: url('bg dark mode.png');
+}
+
+@media (min-width: 1024px) {
+  #home .hero {
+    background-attachment: fixed;
+  }
+  .dark #home .hero {
+    background-attachment: fixed;
+  }
 }
 
 .hero-glow {
@@ -444,7 +454,112 @@ video, #snapshot {
   font-style: normal;
 }
 
-/* ── MY PLANTS GRID ── */
+/* ── MY PLANTS PAGE: toolbar ── */
+.plants-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 20px auto 10px;
+  max-width: 860px;
+  width: 90%;
+}
+
+/* FIX 3: Date filter */
+.plants-date-filter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.plants-date-filter label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--primary);
+  opacity: 0.75;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.plants-date-select {
+  padding: 8px 14px;
+  border-radius: 12px;
+  border: 1.5px solid rgba(111,143,107,0.3);
+  background: rgba(111,143,107,0.07);
+  color: var(--text);
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.plants-date-select:focus { border-color: var(--primary); }
+
+/* FIX 4: Folder system */
+.folders-section {
+  max-width: 860px;
+  width: 90%;
+  margin: 0 auto 24px;
+}
+.folders-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.folders-title {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--primary);
+  opacity: 0.7;
+}
+.folders-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.folder-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 20px;
+  border: 1.5px solid rgba(111,143,107,0.3);
+  background: var(--card);
+  color: var(--text);
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+}
+.folder-chip:hover { border-color: var(--primary); color: var(--primary); }
+.folder-chip.active-folder { background: var(--primary); color: white; border-color: var(--primary); }
+.folder-chip .folder-count {
+  background: rgba(255,255,255,0.25);
+  border-radius: 10px;
+  padding: 1px 7px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.folder-chip.active-folder .folder-count { background: rgba(255,255,255,0.3); }
+.btn-add-folder {
+  padding: 7px 14px;
+  border-radius: 20px;
+  border: 1.5px dashed rgba(111,143,107,0.4);
+  background: transparent;
+  color: var(--primary);
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-add-folder:hover { border-color: var(--primary); background: rgba(111,143,107,0.07); }
+
+/* FIX 2: My Plants GRID — clickable/expandable */
 .plant-grid {
   display: flex; flex-wrap: wrap;
   justify-content: center; gap: 16px; margin-top: 10px;
@@ -456,6 +571,105 @@ video, #snapshot {
   border: 1px solid rgba(111,143,107,0.1);
   backdrop-filter: blur(10px);
   position: relative; text-align: left;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, width 0.3s ease;
+}
+.plant-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 32px rgba(0,0,0,0.1);
+}
+.plant-card.expanded {
+  width: 340px;
+  cursor: default;
+}
+
+.plant-card-collapsed { display: block; }
+.plant-card.expanded .plant-card-collapsed { display: none; }
+
+.plant-card-expanded-content {
+  display: none;
+}
+.plant-card.expanded .plant-card-expanded-content {
+  display: block;
+}
+
+.plant-expand-desc {
+  font-size: 13px;
+  line-height: 1.65;
+  opacity: 0.82;
+  margin: 10px 0;
+}
+.plant-expand-solution {
+  background: rgba(111,143,107,0.07);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-top: 8px;
+}
+.plant-expand-solution-title {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--primary);
+  opacity: 0.7;
+  margin-bottom: 8px;
+}
+.plant-expand-step {
+  display: flex; align-items: flex-start; gap: 8px;
+  font-size: 12px; line-height: 1.55; margin-bottom: 5px;
+  opacity: 0.85;
+}
+.plant-expand-step:last-child { margin-bottom: 0; }
+.plant-expand-dot { color: var(--primary); font-weight: 700; flex-shrink: 0; }
+
+.plant-card-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+/* FIX 5: Track Plant button on plants page */
+.btn-track-plant {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1.5px solid var(--primary);
+  background: var(--primary);
+  color: white;
+  font-family: 'Poppins', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+.btn-track-plant:hover {
+  transform: scale(1.04);
+  box-shadow: 0 4px 14px rgba(111,143,107,0.4);
+}
+.btn-collapse-plant {
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1.5px solid rgba(111,143,107,0.3);
+  background: transparent;
+  color: var(--primary);
+  font-family: 'Poppins', sans-serif;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.btn-collapse-plant:hover { border-color: var(--primary); background: rgba(111,143,107,0.07); }
+
+/* Folder badge on plant card */
+.plant-folder-badge {
+  display: inline-block;
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: rgba(111,143,107,0.12);
+  color: var(--primary);
+  font-weight: 600;
+  margin-bottom: 6px;
 }
 
 .remove-btn {
@@ -700,7 +914,7 @@ video, #snapshot {
   width: 90%;
 }
 
-/* ── Watering Reminder ── */
+/* FIX 6 & 7: Watering Reminder — hollow button, no pre-shown status */
 .watering-reminder-box {
   background: var(--card);
   border-radius: 20px;
@@ -737,10 +951,40 @@ video, #snapshot {
   font-size: 13px;
   outline: none;
 }
+
+/* FIX 7: Hollow reminder button, filled on hover */
+.btn-set-reminder {
+  background: transparent;
+  color: var(--primary);
+  padding: 10px 20px;
+  border-radius: 25px;
+  border: 2px solid var(--primary);
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+}
+.btn-set-reminder:hover,
+.btn-set-reminder:focus {
+  background: var(--primary);
+  color: white;
+  box-shadow: 0 6px 20px rgba(111,143,107,0.35);
+}
+
+/* FIX 6: Reminder status — hidden by default, shown via JS, fades out */
 .reminder-status {
   font-size: 12px;
   margin: 10px 0 0;
-  opacity: 0.75;
+  opacity: 0;
+  color: var(--primary);
+  transition: opacity 0.4s ease;
+  height: 18px; /* keep layout stable */
+}
+.reminder-status.visible {
+  opacity: 1;
 }
 
 /* ══ ABOUT PAGE ══ */
@@ -767,7 +1011,6 @@ video, #snapshot {
   box-shadow: 0 6px 24px rgba(0,0,0,0.06);
   text-align: left;
 }
-
 
 .about-card-icon {
   font-size: 30px;
@@ -887,6 +1130,19 @@ video, #snapshot {
 .health-btn:hover { border-color:var(--primary); color:var(--primary); }
 .health-btn.selected { background:var(--primary); color:white; border-color:var(--primary); }
 
+/* Folder assign modal */
+.folder-assign-select {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1.5px solid rgba(111,143,107,0.3);
+  background: rgba(111,143,107,0.07);
+  color: var(--text);
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  outline: none;
+}
+
 /* ── RESPONSIVE ── */
 .camera-box, .upload-area { width:90%; max-width:340px; }
 .hero { padding:60px 15px 50px; }
@@ -901,6 +1157,7 @@ video, #snapshot {
   .logo { font-size:22px; }
   .about-grid { grid-template-columns: 1fr; }
   .tracker-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+  .plant-card.expanded { width: 90vw; max-width: 340px; }
 }
 @media (max-width:480px) {
   .navbar { grid-template-columns:auto 1fr auto; padding:12px; }

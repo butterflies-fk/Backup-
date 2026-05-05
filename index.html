@@ -620,7 +620,6 @@ function scheduleNextWateringNotification(days){
     if(Notification.permission === 'granted'){
       new Notification('Flora AI 💧 Time to Water!', {
         body: "Your plants are thirsty! Check in on them and give them some water.",
-        icon: 'icon.png'
       });
       scheduleNextWateringNotification(days);
     }
